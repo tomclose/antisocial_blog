@@ -43,12 +43,15 @@ class PostsController < ApplicationController
   # PATCH/PUT /posts/1.json
   def update
     respond_to do |format|
-      if @post.update(post_params)
-        format.html { redirect_to @post, notice: 'Post was successfully updated.' }
-        format.json { head :no_content }
-      else
-        format.html { render action: 'edit' }
-        format.json { render json: @post.errors, status: :unprocessable_entity }
+      PostUpdater.new.call(post_params.merge(id:params[:id])) do |result|
+        result.success do |post|
+          format.html { redirect_to post, notice: 'Post was successfully updated.' }
+          format.json { head :no_content }
+        end
+        result.failure do |post|
+          format.html { @post = post; render action: 'edit' }
+          format.json { render json: post.errors, status: :unprocessable_entity }
+        end
       end
     end
   end
