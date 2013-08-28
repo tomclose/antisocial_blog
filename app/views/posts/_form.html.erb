@@ -1,29 +1,30 @@
-<%= form_for(@post) do |f| %>
-  <% if @post.errors.any? %>
+<%= form_tag @p[:post_url], :method => @p[:method] do %>
+  <% if @p[:errors].any? %>
     <div id="error_explanation">
-      <h2><%= pluralize(@post.errors.count, "error") %> prohibited this post from being saved:</h2>
-
+      <h2><%= pluralize(@p[:errors].count, "error") %> prohibited this post from being saved:</h2>
       <ul>
-      <% @post.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
+      <% @p[:errors].each do |property, errors| %>
+        <% errors.each do |error| %>
+          <li><%= "#{property.capitalize} #{error}"  %></li>
+        <% end %>
       <% end %>
       </ul>
     </div>
   <% end %>
 
   <div class="field">
-    <%= f.label :title %><br>
-    <%= f.text_field :title %>
+    <label for='post_title'>Title</label></br>
+    <%= text_field_tag 'post[title]', @p[:title] %>
   </div>
   <div class="field">
-    <%= f.label :date %><br>
-    <%= f.date_field :date %>
+    <label for='post_date'>Date</label><br>
+    <%= date_field_tag 'post[date]', @p[:date] %>
   </div>
   <div class="field">
-    <%= f.label :body %><br>
-    <%= f.text_area :body %>
+    <label for='post_body'>Body</label><br>
+    <%= text_area_tag 'post[body]', @p[:body] %>
   </div>
   <div class="actions">
-    <%= f.submit %>
+    <%= submit_tag %>
   </div>
 <% end %>

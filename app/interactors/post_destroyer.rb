@@ -3,7 +3,7 @@ class PostDestroyer
     @store = store
   end
 
-  def call(params)
-    @store.destroy_post
+  def call(id)
+    @store.destroy_post(id)
   end
 end

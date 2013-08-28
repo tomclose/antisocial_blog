@@ -15,11 +15,12 @@ class PostsController < ApplicationController
 
   # GET /posts/new
   def new
-    @post = Post.new
+    @p = {:post_url => posts_path, :method => 'post',:errors => []}
   end
 
   # GET /posts/1/edit
   def edit
+    @p = present(@post, 'put')
   end
 
   # POST /posts
@@ -28,11 +29,11 @@ class PostsController < ApplicationController
     respond_to do |format|
       PostCreator.new(@store).call(post_params) do |result|
         result.success do |post|
-          format.html { redirect_to post, notice: 'Post was successfully created.' }
+          format.html { redirect_to post_url(post.id), notice: 'Post was successfully created.' }
           format.json { render action: 'show', status: :created, location: post }
         end
         result.failure do |post|
-          format.html { @post = post; render action: 'new' }
+          format.html {  @p = present(post, 'post');; render action: 'new' }
           format.json { render json: post.errors, status: :unprocessable_entity }
         end
       end
@@ -46,11 +47,11 @@ class PostsController < ApplicationController
     respond_to do |format|
       PostUpdater.new(@store).call(post_params.merge(id:params[:id])) do |result|
         result.success do |post|
-          format.html { redirect_to post, notice: 'Post was successfully updated.' }
+          format.html { redirect_to post_url(post.id), notice: 'Post was successfully updated.' }
           format.json { head :no_content }
         end
         result.failure do |post|
-          format.html { @post = post; render action: 'edit' }
+          format.html {  @p = present(post, 'putj');; render action: 'edit' }
           format.json { render json: post.errors, status: :unprocessable_entity }
         end
       end
@@ -60,7 +61,7 @@ class PostsController < ApplicationController
   # DELETE /posts/1
   # DELETE /posts/1.json
   def destroy
-    PostDestroyer.new(@store).call(params)
+    PostDestroyer.new(@store).call(params[:id])
     respond_to do |format|
       format.html { redirect_to posts_url }
       format.json { head :no_content }
@@ -79,5 +80,10 @@ class PostsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def post_params
       params.require(:post).permit(:title, :date, :body)
+    end
+
+    def present(post, method='post')
+      {:post_url => post_path(post.id), :method => method, :errors => post.errors,
+      :title => post.title, :date => post.date, :body => post.body}
     end
 end

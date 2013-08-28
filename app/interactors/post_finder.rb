@@ -1,5 +1,8 @@
 class PostFinder
+  def initialize(store)
+    @store = store
+  end
   def call(id)
-    Post.find(id)
+    @store.find_post(id)
   end
 end

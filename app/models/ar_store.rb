@@ -17,7 +17,7 @@ class ARStore
     subscribers.each {|s| success ? s.success(p) : s.failure(p) }
   end
 
-  def update_post(params)
+  def update_post(params, &blk)
     subscribers = [] + extract_subscriber(&blk)
     p =  ARPost.find_by_id(params[:id])
     success = p.update(params)
