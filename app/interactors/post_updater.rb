@@ -1,7 +1,8 @@
 class PostUpdater
   include SubscriberExtractor
 
-  def initialize(subscribers = [])
+  def initialize(store, subscribers = [])
+    @store = store
     @subscribers = subscribers
   end
 
@@ -9,10 +10,9 @@ class PostUpdater
     subscribers = @subscribers
     subscribers += extract_subscriber(&block)
 
-    post = PostFinder.new().call(post_params[:id])
-
-    result = post.update(post_params)
-
-    subscribers.each {|s| result ? s.success(post) : s.failure(post)}
+    @store.update_post(post_params) do |result|
+      result.success {|post| subscribers.each {|s| s.success(post) }}
+      result.failure {|post| subscribers.each {|s| s.failure(post) }}
+    end
   end
 end

@@ -1,7 +1,8 @@
 class PostCreator
   include SubscriberExtractor
 
-  def initialize(subscribers = [])
+  def initialize(store, subscribers = [])
+    @store = store
     @subscribers = subscribers
   end
 
@@ -10,12 +11,9 @@ class PostCreator
     subscribers = @subscribers
     subscribers += extract_subscriber(&blk)
 
-    post = Post.new(post_params)
-
-    if post.save
-      subscribers.each {|s| s.success(post)}
-    else
-      subscribers.each {|s| s.failure(post)}
+    @store.create_post(post_params) do |result|
+      result.success {|post| subscribers.each {|s| s.success(post) }}
+      result.failure {|post| subscribers.each {|s| s.failure(post) }}
     end
 
   end

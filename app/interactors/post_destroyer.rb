@@ -1,9 +1,9 @@
 class PostDestroyer
-  def initialize()
+  def initialize(store)
+    @store = store
   end
 
   def call(params)
-    Post.find_by_id(params[:id]).destroy
-
+    @store.destroy_post
   end
 end

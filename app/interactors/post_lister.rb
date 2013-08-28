@@ -1,7 +1,9 @@
 class PostLister
-
+  def initialize(store)
+    @store = store
+  end
   def call
-    Post.all
+    @store.all_posts
   end
 
 end
