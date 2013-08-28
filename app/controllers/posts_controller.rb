@@ -4,7 +4,7 @@ class PostsController < ApplicationController
   # GET /posts
   # GET /posts.json
   def index
-    @posts = Post.all
+    @posts = PostLister.new.call
   end
 
   # GET /posts/1
@@ -24,16 +24,20 @@ class PostsController < ApplicationController
   # POST /posts
   # POST /posts.json
   def create
-    @post = Post.new(post_params)
+    @post = PostCreator.new(self).call(post_params)
+  end
 
+  def post_saved(post)
     respond_to do |format|
-      if @post.save
-        format.html { redirect_to @post, notice: 'Post was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @post }
-      else
-        format.html { render action: 'new' }
-        format.json { render json: @post.errors, status: :unprocessable_entity }
-      end
+      format.html { redirect_to post, notice: 'Post was successfully created.' }
+      format.json { render action: 'show', status: :created, location: post }
+    end
+  end
+
+  def post_save_failed(post)
+    respond_to do |format|
+      format.html { @post = post; render action: 'new' }
+      format.json { render json: post.errors, status: :unprocessable_entity }
     end
   end
 
@@ -64,7 +68,7 @@ class PostsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_post
-      @post = Post.find(params[:id])
+      @post = PostFinder.new().call(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
