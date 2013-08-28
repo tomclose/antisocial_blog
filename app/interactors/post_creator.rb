@@ -1,16 +1,21 @@
 class PostCreator
-  def initialize(subscriber)
-    @subscriber = subscriber
+  include SubscriberExtractor
+
+  def initialize(subscribers = [])
+    @subscribers = subscribers
   end
 
 
-  def call(params)
-    post = Post.new(params)
+  def call(post_params, &blk)
+    subscribers = @subscribers
+    subscribers += extract_subscriber(&blk)
+
+    post = Post.new(post_params)
 
     if post.save
-      @subscriber.post_saved(post)
+      subscribers.each {|s| s.success(post)}
     else
-      @subscriber.post_save_failed(post)
+      subscribers.each {|s| s.failure(post)}
     end
 
   end

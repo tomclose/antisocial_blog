@@ -24,22 +24,20 @@ class PostsController < ApplicationController
   # POST /posts
   # POST /posts.json
   def create
-    @post = PostCreator.new(self).call(post_params)
-  end
-
-  def post_saved(post)
     respond_to do |format|
-      format.html { redirect_to post, notice: 'Post was successfully created.' }
-      format.json { render action: 'show', status: :created, location: post }
+      PostCreator.new.call(post_params) do |result|
+        result.success do |post|
+          format.html { redirect_to post, notice: 'Post was successfully created.' }
+          format.json { render action: 'show', status: :created, location: post }
+        end
+        result.failure do |post|
+          format.html { @post = post; render action: 'new' }
+          format.json { render json: post.errors, status: :unprocessable_entity }
+        end
+      end
     end
   end
 
-  def post_save_failed(post)
-    respond_to do |format|
-      format.html { @post = post; render action: 'new' }
-      format.json { render json: post.errors, status: :unprocessable_entity }
-    end
-  end
 
   # PATCH/PUT /posts/1
   # PATCH/PUT /posts/1.json
