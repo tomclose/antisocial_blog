@@ -1,11 +1,11 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
 one:
-  title: MyString
+  title: First fixture post
   date: 2013-08-28
-  body: MyText
+  body: Hello from the body of the first post in the fixtures.
 
 two:
-  title: MyString
+  title: Second fixture post
   date: 2013-08-28
-  body: MyText
+  body: Hello from the body of the second post in the fixtures.
